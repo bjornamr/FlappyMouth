@@ -7,11 +7,14 @@ from pygame.locals import *
 from mouthdetector import MouthDetector
 import time
 
+global MOUTH
+MOUTH = MouthDetector("../shape_predictor_68_face_landmarks.dat")
+
 FPS = 30
 SCREENWIDTH  = 288
 SCREENHEIGHT = 512
 # amount by which base can maximum shift to left
-PIPEGAPSIZE  = 100 # gap between upper and lower part of pipe
+PIPEGAPSIZE  = 180 # gap between upper and lower part of pipe
 BASEY        = SCREENHEIGHT * 0.79
 # image, sound and hitmask  dicts
 IMAGES, SOUNDS, HITMASKS = {}, {}, {}
@@ -158,22 +161,35 @@ def showWelcomeAnimation():
     # player shm for up-down motion on welcome screen
     playerShmVals = {'val': 0, 'dir': 1}
 
+    trigger_count = 0
+    
+    MOUTH.reset()
+
     while True:
+        mouth_opened = MOUTH.detect_timed()
+
+        if mouth_opened == True:
+            trigger_count += 1
+            SOUNDS['wing'].play()
+
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
-                global MOUTH
-                MOUTH = MouthDetector("../shape_predictor_68_face_landmarks.dat")
-
-                # make first flap sound and return values for mainGame
                 SOUNDS['wing'].play()
-                return {
-                    'playery': playery + playerShmVals['val'],
-                    'basex': basex,
-                    'playerIndexGen': playerIndexGen,
-                }
+                trigger_count = 100
+            if event.type == KEYDOWN and (event.key == K_d):
+                MOUTH.toggle_display()
+            if event.type == KEYDOWN and (event.key == K_v):
+                MOUTH.toggle_verbose()
+        if trigger_count >= 3:
+            # make first flap sound and return values for mainGame
+            return {
+                'playery': playery + playerShmVals['val'],
+                'basex': basex,
+                'playerIndexGen': playerIndexGen,
+            }
 
         # adjust playery, playerIndex, basex
         if (loopIter + 1) % 5 == 0:
@@ -230,20 +246,16 @@ def mainGame(movementInfo):
     playerFlapAcc =  -9   # players speed on flapping
     playerFlapped = False # True when player flaps
 
-    starttime = time.time()
     while True:
-        mouth_open = False
-        now = time.time()
-        if now - starttime > 0.05:
-            MOUTH.detect()
-            mouth_open = MOUTH.get_last()
-            starttime = now
-
+            
+        mouth_opened = MOUTH.detect_timed()
+        
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
                 sys.exit()
-        if mouth_open:
+        
+        if mouth_opened == True:
             if playery > -2 * IMAGES['player'][0].get_height():
                 playerVelY = playerFlapAcc
                 playerFlapped = True
