@@ -77,7 +77,7 @@ class MouthDetector:
         self.tmp_state = None
         self.tmp_state_count = 0
         self.last_time = time.perf_counter()
-
+        self.images = []
 
     def get_last(self):
         try:
@@ -98,14 +98,11 @@ class MouthDetector:
             self.last_time = now
             return self.detect()
         return None
-
-    def detect(self):
+    
+    def detect(self, forceImage = False):
         frame = self.vid.read()
 
-        # resizing frame
-        # you can use cv2.resize but I recommend imutils because its easy to use
         frame = imutils.resize(frame, width=400)
-        # frame = cv2.resize(frame, (400, int(400.0*h/w)), interpolation = cv2.INTER_CUBIC)
 
         # grayscale conversion of image because it is computationally efficient
         # to perform operations on single channeled (grayscale) image
@@ -134,6 +131,9 @@ class MouthDetector:
             old_state = self.last_state
             is_open = self.update_state( open_ratio )
 
+            if forceImage or (open_ratio > 0.75):
+                self.append_image(frame, landmarks[62], distanceMouth, forceImage )
+
             if self.verbose:
                 if is_open:
                     symbol = '[O]' if self.last_state else '[o]'
@@ -156,6 +156,32 @@ class MouthDetector:
             
             return self.last_state
 
+    def append_image(self,img,mouthXY, mouth_size, force = False):
+        
+        img_count = len(self.images) 
+
+        max_size = np.max([s for i,s in self.images]) if img_count > 0 else 0
+
+        if not force and (mouth_size < max_size*1.1) and ( (img_count>= 6) or np.random.choice(2) ):
+            return
+
+        # print( img.shape )
+        w,h=180,222
+        
+        outX = max(0,mouthXY[0] + w//2 - img.shape[1])
+        outY = max(0,mouthXY[1] + h//2 - img.shape[0])
+
+        startX = max(0, mouthXY[0] - w//2 - outX )
+        startY = max(0, mouthXY[1] - h//2 - outY )    
+        
+        img = img[startY:startY+h,startX:startX+w]
+
+        if force:
+            self.images.sort(key = lambda x: x[1])
+
+        self.images.append( (img,mouth_size) )
+        
+    
     def update_state(self, open_ratio):
         
         state = open_ratio >= 0.4

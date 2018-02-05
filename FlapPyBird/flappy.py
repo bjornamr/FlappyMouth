@@ -1,11 +1,15 @@
 from itertools import cycle
 import random
+import os
 import sys
 
 import pygame
 from pygame.locals import *
 from mouthdetector import MouthDetector
 import time
+import cv2
+import uuid
+import numpy as np
 
 global MOUTH
 MOUTH = MouthDetector("../shape_predictor_68_face_landmarks.dat")
@@ -265,6 +269,8 @@ def mainGame(movementInfo):
         crashTest = checkCrash({'x': playerx, 'y': playery, 'index': playerIndex},
                                upperPipes, lowerPipes)
         if crashTest[0]:
+            MOUTH.detect(True)
+
             return {
                 'y': playery,
                 'groundCrash': crashTest[1],
@@ -365,6 +371,17 @@ def showGameOverScreen(crashInfo):
     if not crashInfo['groundCrash']:
         SOUNDS['die'].play()
 
+    start = time.time()
+    image_counter = 0
+    image_dir = 'output/' + str(uuid.uuid1().int)[:8]
+    
+    if not os.path.isdir('output'):
+        os.mkdir('output')
+    os.mkdir(image_dir)
+
+    face_count = 5
+    face_images = [MOUTH.images[0][0]] + [i[0] for i in MOUTH.images[-(face_count-1):]]
+
     while True:
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -375,31 +392,48 @@ def showGameOverScreen(crashInfo):
                 if playery + playerHeight >= BASEY - 1:
                     return
 
+        descent = playery + playerHeight < BASEY - 1
+        
         # player y shift
-        if playery + playerHeight < BASEY - 1:
+        if descent:
             playery += min(playerVelY, BASEY - playery - playerHeight)
 
-        # player velocity change
-        if playerVelY < 15:
-            playerVelY += playerAccY
+            # player velocity change
+            if playerVelY < 15:
+                playerVelY += playerAccY
 
-        # rotate only when it's a pipe crash
-        if not crashInfo['groundCrash']:
-            if playerRot > -90:
-                playerRot -= playerVelRot
+            # rotate only when it's a pipe crash
+            if not crashInfo['groundCrash']:
+                if playerRot > -90:
+                    playerRot -= playerVelRot
 
-        # draw sprites
-        SCREEN.blit(IMAGES['background'], (0,0))
+            # draw sprites
+            SCREEN.blit(IMAGES['background'], (0,0))
 
-        for uPipe, lPipe in zip(upperPipes, lowerPipes):
-            SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
-            SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
+            for uPipe, lPipe in zip(upperPipes, lowerPipes):
+                SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
+                SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
 
-        SCREEN.blit(IMAGES['base'], (basex, BASEY))
+            SCREEN.blit(IMAGES['base'], (basex, BASEY))
+
+            playerSurface = pygame.transform.rotate(IMAGES['player'][1], playerRot)
+            SCREEN.blit(playerSurface, (playerx,playery))
+
+        elif (image_counter < face_count) and (time.time() - start > 0.4 + 0.1*image_counter):
+                SOUNDS['hit'].play()
+                img_file = "{}/{}.png".format(image_dir, image_counter)
+                cv2.imwrite(img_file,face_images[image_counter])
+
+                img_xy = (108 * (image_counter % 2), image_counter * ((512-222)//(face_count-1)))
+
+                if image_counter == face_count - 1 and face_count % 2 ==1:
+                    img_xy = (54,img_xy[1])
+
+                SCREEN.blit(pygame.image.load(img_file).convert_alpha(), img_xy)
+                start = time.time()
+                image_counter += 1
+
         showScore(score)
-
-        playerSurface = pygame.transform.rotate(IMAGES['player'][1], playerRot)
-        SCREEN.blit(playerSurface, (playerx,playery))
 
         FPSCLOCK.tick(FPS)
         pygame.display.update()
