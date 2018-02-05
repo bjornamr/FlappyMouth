@@ -1,0 +1,4 @@
+pygame
+dlib
+opencv-python
+imutils
