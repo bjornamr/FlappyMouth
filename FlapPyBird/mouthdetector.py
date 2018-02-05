@@ -91,13 +91,14 @@ class MouthDetector:
     def toggle_verbose(self):
         self.verbose = not self.verbose
 
-    def detect_timed(self, resolution=0.04):
+
+    def detect_timed(self, resolution=0.00):
         now = time.perf_counter()
-        if now - self.last_time > resolution:
+        if now - self.last_time >= resolution:
             self.last_time = now
             return self.detect()
         return None
-    
+
     def detect(self):
         frame = self.vid.read()
 
