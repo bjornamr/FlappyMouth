@@ -350,6 +350,9 @@ def mainGame(movementInfo):
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
+def save_score(score, dir):
+    with open(dir + "/" + "score.txt", "w") as f:
+        f.write("score: " + str(score))
 
 def showGameOverScreen(crashInfo):
     """crashes the player down ans shows gameover image"""
@@ -374,10 +377,12 @@ def showGameOverScreen(crashInfo):
     start = time.time()
     image_counter = 0
     image_dir = 'output/' + str(uuid.uuid1().int)[:8]
-    
+
     if not os.path.isdir('output'):
         os.mkdir('output')
     os.mkdir(image_dir)
+    save_score(score, image_dir)
+
 
     face_count = 5
     face_images = [MOUTH.images[0][0]] + [i[0] for i in MOUTH.images[-(face_count-1):]]
