@@ -26,27 +26,11 @@ def eyePoints():
     return [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47]
 
 def distanceBetweenMouth(c):
-    m_60 = c[59]
-    m_61 = c[60]
-    m_62 = c[61]
-    m_63 = c[62]
-    m_64 = c[63]
-    m_65 = c[64]
-    m_66 = c[65]
-    m_67 = c[66]
-    x1 = np.linalg.norm(np.array([m_61])-np.array([m_67]))
-    x2 = np.linalg.norm(np.array([m_62])-np.array([m_66]))
-    x3 = np.linalg.norm(np.array([m_63])-np.array([m_65]))
-    return ((x1+x2+x3)/3)
-
+    return np.mean([np.linalg.norm(c[61] - c[67]), 
+        np.linalg.norm(c[62] - c[66]),
+        np.linalg.norm(c[63] - c[65])])
 
 def heightFace(c):
     bottom = np.min(c[:,1])
     top = np.min(c[48:68,1])
     return top-bottom
-
-
-
-
-def mouthPoints():
-    return [60,61,62,63,64,65,66,67]
