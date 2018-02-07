@@ -2,7 +2,7 @@
 
 ### Flappy Mouth - Making Waves
 
-Written by **Dmitriy Semashkov** and **Bjørnar Moe Remmen** as a project used for meetups with students. 
+Written by [**Dmitriy Semashkov**](https://github.com/imsedim) and [**Bjørnar Moe Remmen**](https://github.com/bjornamr) as a project used for meetups with students. 
 Use and change as you like.
 
 This code makes it possible to play flappy bird using your mouth utilizing the web cam.
