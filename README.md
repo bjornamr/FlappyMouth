@@ -11,11 +11,12 @@ This code makes it possible to play flappy bird using your mouth utilizing the w
 
 From this start screen, open your mouth 3 times to start playing.
 
-![Start screen](assets/readmepics/gamestart.png)
+<img src="assets/readmepics/gamestart.png" width="50%"> 
 
 
 Here a losing screen. To get back to starting screen, open your mouth 2 times.
-![Image of Yaktocat](assets/readmepics/gamestart.png)
+
+<img src="assets/readmepics/gamelost.png" width="50%"> 
 
 
 # Installation instructions
