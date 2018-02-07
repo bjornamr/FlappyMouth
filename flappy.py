@@ -85,12 +85,13 @@ def main():
         pygame.image.load('assets/sprites/9.png').convert_alpha()
     )
 
+    SPRITES_PATH = os.path.join('assets', 'sprites')
     # game over sprite
-    IMAGES['gameover'] = pygame.image.load('assets/sprites/gameover.png').convert_alpha()
+    IMAGES['gameover'] = pygame.image.load(os.path.join(SPRITES_PATH, 'gameover.png')).convert_alpha()
     # message sprite for welcome screen
-    IMAGES['message'] = pygame.image.load('assets/sprites/message.png').convert_alpha()
+    IMAGES['message'] = pygame.image.load(os.path.join(SPRITES_PATH, 'message.png')).convert_alpha()
     # base (ground) sprite
-    IMAGES['base'] = pygame.image.load('assets/sprites/base.png').convert_alpha()
+    IMAGES['base'] = pygame.image.load(os.path.join(SPRITES_PATH, 'base.png')).convert_alpha()
 
     # sounds
     if 'win' in sys.platform:
@@ -98,11 +99,12 @@ def main():
     else:
         soundExt = '.ogg'
 
-    SOUNDS['die']    = pygame.mixer.Sound('assets/audio/die' + soundExt)
-    SOUNDS['hit']    = pygame.mixer.Sound('assets/audio/hit' + soundExt)
-    SOUNDS['point']  = pygame.mixer.Sound('assets/audio/point' + soundExt)
-    SOUNDS['swoosh'] = pygame.mixer.Sound('assets/audio/swoosh' + soundExt)
-    SOUNDS['wing']   = pygame.mixer.Sound('assets/audio/wing' + soundExt)
+    AUDIO_PATH = os.path.join('assets', 'audio')
+    SOUNDS['die']    = pygame.mixer.Sound(os.path.join(AUDIO_PATH, 'die') + soundExt)
+    SOUNDS['hit']    = pygame.mixer.Sound(os.path.join(AUDIO_PATH, 'hit') + soundExt)
+    SOUNDS['point']  = pygame.mixer.Sound(os.path.join(AUDIO_PATH, 'point') + soundExt)
+    SOUNDS['swoosh'] = pygame.mixer.Sound(os.path.join(AUDIO_PATH, 'swoosh') + soundExt)
+    SOUNDS['wing']   = pygame.mixer.Sound(os.path.join(AUDIO_PATH, 'wing') + soundExt)
 
     while True:
         # select random background sprites
