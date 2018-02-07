@@ -2,14 +2,13 @@ from itertools import cycle
 import random
 import os
 import sys
-
+import uuid
+import time
+import os
 import pygame
 from pygame.locals import *
-from mouthdetector import MouthDetector
-import time
 import cv2
-import uuid
-import numpy as np
+from mouthdetector import MouthDetector
 
 global MOUTH
 MOUTH = MouthDetector("shape_predictor_68_face_landmarks.dat")
@@ -27,35 +26,35 @@ IMAGES, SOUNDS, HITMASKS = {}, {}, {}
 PLAYERS_LIST = (
     # red bird
     (
-        'assets/sprites/redbird-upflap.png',
-        'assets/sprites/redbird-midflap.png',
-        'assets/sprites/redbird-downflap.png',
+        os.path.join('assets', 'sprites', 'redbird-upflap.png'),
+        os.path.join('assets', 'sprites', 'redbird-midflap.png'),
+        os.path.join('assets', 'sprites', 'redbird-downflap.png'),
     ),
     # blue bird
     (
         # amount by which base can maximum shift to left
-        'assets/sprites/bluebird-upflap.png',
-        'assets/sprites/bluebird-midflap.png',
-        'assets/sprites/bluebird-downflap.png',
+        os.path.join('assets', 'sprites', 'bluebird-upflap.png'),
+        os.path.join('assets', 'sprites', 'bluebird-midflap.png'),
+        os.path.join('assets', 'sprites', 'bluebird-downflap.png'),
     ),
     # yellow bird
     (
-        'assets/sprites/yellowbird-upflap.png',
-        'assets/sprites/yellowbird-midflap.png',
-        'assets/sprites/yellowbird-downflap.png',
+        os.path.join('assets', 'sprites', 'yellowbird-upflap.png'),
+        os.path.join('assets', 'sprites', 'yellowbird-midflap.png'),
+        os.path.join('assets', 'sprites', 'yellowbird-downflap.png'),
     ),
 )
 
 # list of backgrounds
 BACKGROUNDS_LIST = (
-    'assets/sprites/background-day.png',
-    'assets/sprites/background-night.png',
+    os.path.join('assets', 'sprites', 'background-day.png'),
+    os.path.join('assets', 'sprites', 'background-night.png'),
 )
 
 # list of pipes
 PIPES_LIST = (
-    'assets/sprites/pipe-green.png',
-    'assets/sprites/pipe-red.png',
+    os.path.join('assets', 'sprites', 'pipe-green.png'),
+    os.path.join('assets', 'sprites', 'pipe-red.png'),
 )
 
 
